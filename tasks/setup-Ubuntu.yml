@@ -1,0 +1,11 @@
+---
+- name: Ensure pecl is installed.
+  apt:
+    name: "{{ php_pecl_package }}"
+    state: present
+    install_recommends: no    
+
+- name: Updating PECL channels.
+  shell: pecl update-channels
+  register: pecl_updatechannels
+  changed_when: "'succeeded' in pecl_updatechannels"

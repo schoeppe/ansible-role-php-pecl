@@ -1,0 +1,5 @@
+---
+- name: Ensure pecl is installed.
+  package:
+    name: "{{ php_pecl_package }}"
+    state: present

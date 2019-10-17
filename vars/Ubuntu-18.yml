@@ -1,0 +1,5 @@
+---
+php_pecl_package:
+  - php{{ php_version }}-dev
+  - build-essential
+  - php-pear
