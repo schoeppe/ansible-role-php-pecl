@@ -5,11 +5,11 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
     - "{{ ansible_os_family }}.yml"
 
-- include_tasks: setup.yml
-  when: (php_pecl_install_pecl == true) and (ansible_os_family != 'Ubuntu')
-
-- include_tasks: setup-Ubuntu.yml
-  when: (php_pecl_install_pecl == true) and (ansible_os_family == 'Ubuntu')
+- name: Ensure pecl is installed (if configured).
+  package:
+    name: "{{ php_pecl_package }}"
+    state: present
+  when: php_pecl_install_pecl
 
 - name: Install PECL libaries.
   shell: "yes '' | {{ php_pecl_install_command }} {{ item }}"
