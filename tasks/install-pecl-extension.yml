@@ -1,0 +1,38 @@
+---
+- name: Set PECL extension variables.
+  set_fact:
+    php_pecl_extension_name: "{{ php_pecl_extension.name | default(php_pecl_extension) }}"
+    php_module_enable: "{{ php_pecl_extension.php_module_enable | default(true) }}"
+    php_module_conf_filename: >-
+      {{ php_pecl_extension.php_module_conf_filename |
+          default('20-' + (php_pecl_extension.name | default(php_pecl_extension)) + '.ini') }}
+
+- name: Install PECL extension.
+  shell: "yes '' | {{ php_pecl_install_command }} {{ php_pecl_extension_name }}"
+  register: php_pecl_install_result
+  changed_when: php_pecl_install_result is succeeded
+  failed_when: >-
+    not (('already installed' in php_pecl_install_result.stdout)
+         or ('install ok:' in php_pecl_install_result.stdout))
+
+- debug: var=php_module_conf_filename
+
+- name: Ensure PHP module is enabled.
+  template:
+    src: pecl-module.ini.j2
+    dest: "{{ item }}/{{ php_module_conf_filename }}"
+    owner: root
+    group: root
+    force: true
+    mode: 0644
+  loop: "{{ php_extension_conf_paths }}"
+  when: php_module_enable
+  notify: restart webserver
+
+- name: Ensure PHP module is disabled.
+  file:
+    path: "{{ item }}/{{ php_module_conf_filename }}"
+    state: absent
+  with_items: "{{ php_extension_conf_paths }}"
+  when: not php_module_enable
+  notify: restart webserver

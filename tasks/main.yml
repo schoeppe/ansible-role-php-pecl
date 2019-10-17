@@ -11,9 +11,12 @@
     state: present
   when: php_pecl_install_pecl
 
-- name: Install PECL libaries.
-  shell: "yes '' | {{ php_pecl_install_command }} {{ item }}"
-  register: pecl_result
-  changed_when: pecl_result is succeeded
-  failed_when: "not (('already installed' in pecl_result.stdout) or ('install ok:' in pecl_result.stdout))"
-  with_items: "{{ php_pecl_extensions }}"
+- name: Updating PECL channels.
+  command: pecl update-channels
+  register: php_pecl_updatechannels
+  changed_when: "'succeeded' in php_pecl_updatechannels"
+
+- include_tasks: install-pecl-extension.yml
+  loop: "{{ php_pecl_extensions }}"
+  loop_control:
+    loop_var: php_pecl_extension

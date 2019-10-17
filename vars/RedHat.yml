@@ -1,2 +1,4 @@
 ---
-php_pecl_package: php-pear
+php_pecl_package:
+  - "@Development tools"
+  - php-pear
