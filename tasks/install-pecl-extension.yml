@@ -15,8 +15,6 @@
     not (('already installed' in php_pecl_install_result.stdout)
          or ('install ok:' in php_pecl_install_result.stdout))
 
-- debug: var=php_module_conf_filename
-
 - name: Ensure PHP module is enabled.
   template:
     src: pecl-module.ini.j2
